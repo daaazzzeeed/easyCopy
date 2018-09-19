@@ -25,7 +25,7 @@ This app is still in development, copying/clearing will be unavailiable until ne
 - Qt documentation - [click this link](http://doc.qt.io/)
 
 # Database 
-Database gives user the ability to store information on cosmic vehicles, its systems, subsystems and commands/telemetry data.
+This database is meant to be just an example, it gives user the ability to store information on cosmic vehicles, its systems, subsystems and commands/telemetry data just to show user the app
   ## Database structure
 Contains 5 tables: 
 - KA (Kosmic Apparat)
