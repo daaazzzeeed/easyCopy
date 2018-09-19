@@ -21,10 +21,10 @@ public:
 
     QString loadDatabaseFile();
 
-    QSqlRelationalTableModel *modelFrom;
-    QSqlRelationalTableModel *modelTo;
     QSqlDatabase dbFrom;
     QSqlDatabase dbTo;
+    QSqlRelationalTableModel *modelFrom;
+    QSqlRelationalTableModel *modelTo;
     QString path;
 
     void addLog(const QString string);

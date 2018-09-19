@@ -4,6 +4,7 @@
 #include <QTime>
 #include <QSqlQuery>
 #include <QTableWidget>
+#include <QLatin1String>
 
 Copier::Copier(QWidget *parent) :
     QMainWindow(parent),
@@ -24,8 +25,8 @@ Copier::Copier(QWidget *parent) :
    connect(ui->tablesFromLV,QTableWidget::doubleClicked,this, &Copier::onLoadTableFromClicked);
    connect(ui->tablesToLV,QTableWidget::doubleClicked,this, &Copier::onLoadTableToClicked);
 
-   connect(ui->columnsFromLV,QTableWidget::doubleClicked,this, &Copier::onLoadColumnFromClicked);
-   connect(ui->columnsToLV,QTableWidget::doubleClicked,this, &Copier::onLoadColumnToClicked);
+   connect(ui->moveFromPb,SIGNAL(clicked()),this, SLOT(onLoadColumnFromClicked()));
+   connect(ui->moveToPb,SIGNAL(clicked()),this, SLOT(onLoadColumnToClicked()));
 
    connect(ui->copyPb,SIGNAL(clicked()),this,SLOT(onAcceptClicked()));
    connect(ui->clearPb,SIGNAL(clicked()),this,SLOT(onClearClicked()));
@@ -36,7 +37,9 @@ Copier::Copier(QWidget *parent) :
 
 
 Copier::~Copier()
-{
+{   dbFrom.close();
+    dbTo.close();
+
     delete ui;
 }//Copier::~Copier()
 
@@ -48,9 +51,9 @@ QString Copier::loadDatabaseFile(){
 void Copier::onLoadDbFromClicked(){
     QString filename = loadDatabaseFile();
     ui->pathFromLE->setText(filename);
-
+    QLatin1String dbFromConnectionName("connection_from");
     //adding and setting database to copy FROM
-    dbFrom = QSqlDatabase::addDatabase("QSQLITE");
+    dbFrom = QSqlDatabase::addDatabase("QSQLITE", dbFromConnectionName);
     dbFrom.setHostName("localhost");
     dbFrom.setDatabaseName(filename);
     if(dbFrom.open()){
@@ -69,45 +72,75 @@ void Copier::onLoadDbToClicked(){
     addLog("database to copy to added");
     ui->pathToLE->setText(filename);
     //adding and setting database to copy TO
+
     dbTo = QSqlDatabase::addDatabase("QSQLITE");
     dbTo.setHostName("localhost");
     dbTo.setDatabaseName(filename);
-    if(dbTo.open()){
+    bool ok = dbTo.open();
+
+    if(ok){
         addLog("database to copy to added");
     }else{
         addLog("database failed to open");
     }
-   // modelTo = new QSqlRelationalTableModel(Q_NULLPTR, dbTo);
+
     getAllTables(dbTo, ui->tablesToLV);
 }
 
 void Copier::onLoadTableFromClicked(){
+     modelFrom = new QSqlRelationalTableModel(Q_NULLPTR, dbFrom);
      modelFrom->setTable(ui->tablesFromLV->currentItem()->text());
-     qDebug() << ui->tablesFromLV->currentItem()->text();
-     qDebug() << modelFrom->select();
+     modelFrom->setEditStrategy(QSqlTableModel::OnFieldChange);
+     modelFrom->select();
+     for(int i =0; i<modelFrom->columnCount();i++){
+          modelFrom->setHeaderData(i, Qt::Horizontal, ui->tablesFromLV->currentItem()->text());
+     }
+     ui->columnsFromLV->setModel(modelFrom);
+     modelFrom->select();
      qDebug() << "rows: " << modelFrom->rowCount();
      qDebug() << "columns: " <<modelFrom->columnCount();
-     for(int i = 0; i < modelFrom->rowCount(); i++){
-         for(int j = 0; j < modelFrom->columnCount(); j++){
-             QTableWidgetItem *item = new QTableWidgetItem();
-             item->setText(modelFrom->index(i,j).data().toString());
-             qDebug() << modelFrom->index(i,j).data().toString();
-             ui->columnsFromLV->setItem(i, j, item);
-         }
-     }
-qDebug() << "ok";
 }
 
 void Copier::onLoadTableToClicked(){
-    qDebug() << "it's ok";
+    modelTo = new QSqlRelationalTableModel(Q_NULLPTR, dbTo);
+    modelTo->setTable(ui->tablesToLV->currentItem()->text());
+    modelTo->setEditStrategy(QSqlTableModel::OnFieldChange);
+    modelTo->select();
+    for(int i =0; i<modelTo->columnCount();i++){
+         modelTo->setHeaderData(i, Qt::Horizontal, ui->tablesToLV->currentItem()->text());
+    }
+    ui->columnsToLV->setModel(modelTo);
+    modelTo->select();
 }
 
 void Copier::onLoadColumnFromClicked(){
-    qDebug() << "it's ok";
+    QItemSelectionModel* sel_mod = ui->columnsFromLV->selectionModel();
+    ui->correlationLvFrom->setColumnCount(sel_mod->selectedIndexes().length());
+    int r = ui->correlationLvFrom->rowCount();
+    ui->correlationLvFrom->insertRow(r);
+
+    for(int i=0; i<sel_mod->selectedIndexes().length(); i++){
+        QString selected_item = sel_mod->selectedIndexes().at(i).data().toString();
+        QTableWidgetItem *item = new QTableWidgetItem();
+                     item->setText(selected_item);
+                     ui->correlationLvFrom->setSortingEnabled(false);
+                     ui->correlationLvFrom->setItem(r, i, item );
+    }
 }
 
 void Copier::onLoadColumnToClicked(){
-    qDebug() << "it's ok";
+    QItemSelectionModel* sel_mod = ui->columnsToLV->selectionModel();
+    ui->correlationLvTo->setColumnCount(sel_mod->selectedIndexes().length());
+    int r = ui->correlationLvTo->rowCount();
+    ui->correlationLvTo->insertRow(r);
+
+    for(int i=0; i<sel_mod->selectedIndexes().length(); i++){
+        QString selected_item = sel_mod->selectedIndexes().at(i).data().toString();
+        QTableWidgetItem *item = new QTableWidgetItem();
+                     item->setText(selected_item);
+                     ui->correlationLvTo->setSortingEnabled(false);
+                     ui->correlationLvTo->setItem(r, i, item );
+    }
 }
 
 void Copier::onAcceptClicked(){
