@@ -13,7 +13,7 @@ If you made a mistake choosing column just click clear button! Now you can ~~enj
         
 
 Screenshots provide will provide you with the general look of this application
-![alt tag](Ashampoo_Snap_2018.09.19_21h41m43s_003_.png)
+![alt tag](copier_utility_v1_1.png)
 
 # Please notice
 This app is still in development, copying/clearing will be unavailiable until next week, other features work just fine
