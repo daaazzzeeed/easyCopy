@@ -61,9 +61,6 @@ void Copier::onLoadDbFromClicked(){
     }else{
         addLog("database failed to open");
     }
-
-   // modelFrom = new QSqlRelationalTableModel(Q_NULLPTR, dbFrom);
-
     getAllTables(dbFrom, ui->tablesFromLV);
 }
 
@@ -71,8 +68,8 @@ void Copier::onLoadDbToClicked(){
     QString filename = loadDatabaseFile();
     addLog("database to copy to added");
     ui->pathToLE->setText(filename);
-    //adding and setting database to copy TO
 
+    //adding and setting database to copy TO
     dbTo = QSqlDatabase::addDatabase("QSQLITE");
     dbTo.setHostName("localhost");
     dbTo.setDatabaseName(filename);
@@ -148,7 +145,15 @@ void Copier::onAcceptClicked(){
 }
 
 void Copier::onClearClicked(){
-    qDebug() << "it's ok";
+
+    ui->correlationLvFrom->clear();
+    ui->correlationLvTo->clear();
+
+    ui->correlationLvFrom->setColumnCount(0);
+    ui->correlationLvFrom->setRowCount(0);
+
+    ui->correlationLvTo->setColumnCount(0);
+    ui->correlationLvTo->setRowCount(0);
 }
 
 void Copier::addLog(const QString string){
