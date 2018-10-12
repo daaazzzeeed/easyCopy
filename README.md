@@ -11,7 +11,7 @@ Now you can easily move data from one .db file to another without any default SQ
 
 If you made a mistake choosing column just click clear button! Now you can ~~enjoy your life~~ continue your ~~boring~~ work c:
         
-
+        
 Screenshots provide will provide you with the general look of this application
 ![alt tag](copier_utility_v1_1.png)
 
@@ -24,45 +24,6 @@ This app is still in development, copying/clearing will be unavailiable until ne
 
 - Qt documentation - [click this link](http://doc.qt.io/)
 
-# Database 
-This database is meant to be just an example, it gives user the ability to store information on cosmic vehicles, its systems, subsystems and commands/telemetry data just to show user the app
-  ## Database structure
-Contains 5 tables: 
-- KA (Kosmic Apparat)
-    rows:
-    - id - int (not displayed) - foreign key for Systems id_ka
-    - ka - String
-- System 
-    - id - int (not displayed) - foreign key for SubSystems id_subsystem
-    - id_ka - int
-    - address - String
-    - name - String
-- SubSystem
-    - id - int (not displayed) - foreign key for TMI/Command id_subsystem
-    - id_subsystem - int
-    - subaddress - String
-    - count_data_word - String
-    - name - String
-- TMI
-    - id - int (not displayed)
-    - id_subsystem - int
-    - number_parameter - int
-    - count_bit - int
-    - number_bit - int
-    - number_data_word - int
-    - name - String
-    - description - String
-- Command
-    - id - int (not displayed)
-    - id_subsystem - int
-    - count_bit - int
-    - number_bit - int
-    - number_data_word - int
-    - reaction_time - int
-    - name - String
-    - description - String
-    
-    Please notice that for convenience' sake program displays SubSystem's name in the field id_subsystem of QTableView
 # Getting started
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 This application requires SQLite client(e.g. SQLite Maestro).
