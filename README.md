@@ -1,4 +1,4 @@
-# DatabaseCopyingUtility
+# easyCopy
 This is an instrument developed to make copying data from one database to another quick and easy
 
 Now you can easily move data from one .db file to another without any default SQL clients
